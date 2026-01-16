@@ -6,6 +6,7 @@ import { parseWithZod } from '@conform-to/zod';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 
+import { DynamicFormActionArgs } from '@/vibes/soul/form/dynamic-form';
 import { Field, FieldGroup, schema } from '@/vibes/soul/form/dynamic-form/schema';
 import { signIn } from '~/auth';
 import { client } from '~/client';
@@ -335,10 +336,9 @@ function parseRegisterCustomerInput(
 }
 
 export async function registerCustomer<F extends Field>(
-  prevState: {
+  { fields, passwordComplexity }: DynamicFormActionArgs<F>,
+  _prevState: {
     lastResult: SubmissionResult | null;
-    fields: Array<F | FieldGroup<F>>;
-    passwordComplexity?: Parameters<typeof schema>[1];
   },
   formData: FormData,
 ) {
@@ -347,19 +347,17 @@ export async function registerCustomer<F extends Field>(
   const cartId = await getCartId();
 
   const submission = parseWithZod(formData, {
-    schema: schema(prevState.fields, prevState.passwordComplexity),
+    schema: schema(fields, passwordComplexity),
   });
 
   if (submission.status !== 'success') {
     return {
       lastResult: submission.reply(),
-      fields: prevState.fields,
-      passwordComplexity: prevState.passwordComplexity,
     };
   }
 
   try {
-    const input = parseRegisterCustomerInput(submission.value, prevState.fields);
+    const input = parseRegisterCustomerInput(submission.value, fields);
     const response = await client.fetch({
       document: RegisterCustomerMutation,
       variables: {
@@ -375,8 +373,6 @@ export async function registerCustomer<F extends Field>(
         lastResult: submission.reply({
           formErrors: response.data.customer.registerCustomer.errors.map((error) => error.message),
         }),
-        fields: prevState.fields,
-        passwordComplexity: prevState.passwordComplexity,
       };
     }
 
@@ -397,23 +393,17 @@ export async function registerCustomer<F extends Field>(
         lastResult: submission.reply({
           formErrors: error.errors.map(({ message }) => message),
         }),
-        fields: prevState.fields,
-        passwordComplexity: prevState.passwordComplexity,
       };
     }
 
     if (error instanceof Error) {
       return {
         lastResult: submission.reply({ formErrors: [error.message] }),
-        fields: prevState.fields,
-        passwordComplexity: prevState.passwordComplexity,
       };
     }
 
     return {
       lastResult: submission.reply({ formErrors: [t('somethingWentWrong')] }),
-      fields: prevState.fields,
-      passwordComplexity: prevState.passwordComplexity,
     };
   }
 

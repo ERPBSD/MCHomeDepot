@@ -37,17 +37,25 @@ import { Textarea } from '@/vibes/soul/form/textarea';
 import { Button, ButtonProps } from '@/vibes/soul/primitives/button';
 
 import { Field, FieldGroup, PasswordComplexitySettings, schema } from './schema';
+import { removeOptionsFromFields } from './utils';
 
-type Action<S, P> = (state: Awaited<S>, payload: P) => S | Promise<S>;
-
-interface State<F extends Field> {
+export interface DynamicFormActionArgs<F extends Field> {
   fields: Array<F | FieldGroup<F>>;
-  lastResult: SubmissionResult | null;
-  successMessage?: ReactNode;
   passwordComplexity?: PasswordComplexitySettings | null;
 }
 
-export type DynamicFormAction<F extends Field> = Action<State<F>, FormData>;
+type Action<F extends Field, S, P> = (
+  args: DynamicFormActionArgs<F>,
+  state: Awaited<S>,
+  payload: P,
+) => S | Promise<S>;
+
+interface State {
+  lastResult: SubmissionResult | null;
+  successMessage?: ReactNode;
+}
+
+export type DynamicFormAction<F extends Field> = Action<F, State, FormData>;
 
 export interface DynamicFormProps<F extends Field> {
   fields: Array<F | FieldGroup<F>>;
@@ -65,7 +73,7 @@ export interface DynamicFormProps<F extends Field> {
 
 export function DynamicForm<F extends Field>({
   action,
-  fields: defaultFields,
+  fields,
   buttonSize = 'medium',
   cancelLabel = 'Cancel',
   submitLabel = 'Submit',
@@ -74,16 +82,17 @@ export function DynamicForm<F extends Field>({
   onCancel,
   onChange,
   onSuccess,
-  passwordComplexity: defaultPasswordComplexity,
+  passwordComplexity,
 }: DynamicFormProps<F>) {
-  const [{ lastResult, fields, successMessage, passwordComplexity }, formAction] = useActionState(
-    action,
-    {
-      fields: defaultFields,
-      lastResult: null,
-      passwordComplexity: defaultPasswordComplexity,
-    },
-  );
+  // Remove options from fields before passing to action to reduce payload size
+  // Options are only needed for rendering, not for processing form submissions
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const fieldsWithoutOptions = removeOptionsFromFields(fields) as Array<F | FieldGroup<F>>;
+  const actionWithFields = action.bind(null, { fields: fieldsWithoutOptions, passwordComplexity });
+
+  const [{ lastResult, successMessage }, formAction] = useActionState(actionWithFields, {
+    lastResult: null,
+  });
 
   const dynamicSchema = schema(fields, passwordComplexity);
   const defaultValue = fields
