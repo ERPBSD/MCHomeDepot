@@ -6,6 +6,7 @@ import './components/carousel/register';
 import './components/customer-group-slot/register';
 import './components/header-top-bar/register';
 import './components/header-secondary-nav/register';
+import './components/homepage-hero/register';
 import './components/product-card/register';
 import './components/product-detail/register';
 import './components/products-carousel/register';
