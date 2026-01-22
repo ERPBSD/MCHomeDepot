@@ -1,4 +1,4 @@
-import { Color, Group, Image, Link, Number, Select, TextInput } from '@makeswift/runtime/controls';
+import { Color, Group, Image, Link, Number, TextInput } from '@makeswift/runtime/controls';
 
 import { runtime } from '~/lib/makeswift/runtime';
 

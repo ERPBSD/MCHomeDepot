@@ -39,7 +39,10 @@ runtime.registerComponent(MakeswiftHeaderSecondaryNav, {
   props: {
     className: Style(),
     backgroundColor: Color({ label: 'Background color', defaultValue: '#004896' }),
-    categoryButtonLabel: TextInput({ label: 'Categories button label', defaultValue: 'All Categories' }),
+    categoryButtonLabel: TextInput({
+      label: 'Categories button label',
+      defaultValue: 'All Categories',
+    }),
     links: List({
       label: 'Category links',
       type: Group({

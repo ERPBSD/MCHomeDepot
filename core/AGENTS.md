@@ -43,6 +43,7 @@ export type Streamable<T> = T | Promise<T>;
 ```
 
 A `Streamable<T>` represents data that can be either:
+
 - **Immediate**: Already resolved data of type `T`
 - **Deferred**: A Promise that will resolve to type `T`
 
@@ -51,6 +52,7 @@ A `Streamable<T>` represents data that can be either:
 Located in `core/vibes/soul/lib/streamable.tsx`, the Streamable system provides:
 
 **`Streamable.from()`** - Creates a streamable from a lazy promise factory:
+
 ```typescript
 const streamableProducts = Streamable.from(async () => {
   const customerToken = await getSessionCustomerAccessToken();
@@ -60,15 +62,13 @@ const streamableProducts = Streamable.from(async () => {
 ```
 
 **`Streamable.all()`** - Combines multiple streamables with automatic caching:
+
 ```typescript
-const combined = Streamable.all([
-  streamableProducts,
-  streamableCategories,
-  streamableUser
-]);
+const combined = Streamable.all([streamableProducts, streamableCategories, streamableUser]);
 ```
 
 **`useStreamable()`** - Hook for consuming streamables in components:
+
 ```typescript
 function MyComponent({ data }: { data: Streamable<Product[]> }) {
   const products = useStreamable(data);
@@ -77,6 +77,7 @@ function MyComponent({ data }: { data: Streamable<Product[]> }) {
 ```
 
 **`<Stream>` Component** - Provides Suspense boundary for streamable data:
+
 ```tsx
 <Stream value={streamableProducts} fallback={<ProductSkeleton />}>
   {(products) => <ProductList products={products} />}
@@ -129,12 +130,14 @@ The `vibes/` directory contains the **highly customizable and styleable UI layer
 ### Vibes vs Pages Architecture
 
 **`vibes/` folder**: Contains presentation components that are meant to be highly customizable and styleable to change the UI:
+
 - Accept `Streamable<T>` data as props
 - Handle rendering, styling, and user interactions
 - Support theming through CSS variables
 - No direct data fetching or business logic
 
 **`page.tsx` files**: Where data fetching patterns should live:
+
 - Handle authentication and authorization
 - Create `Streamable` data sources
 - Transform API responses for vibes components
@@ -169,6 +172,7 @@ page.tsx → Streamable data → Vibes components → User interaction
 ```
 
 **Example Pattern:**
+
 ```typescript
 // app/[locale]/(default)/page.tsx - Data fetching
 export default async function HomePage({ params }: Props) {
@@ -178,7 +182,7 @@ export default async function HomePage({ params }: Props) {
   });
 
   return (
-    <FeaturedProductList 
+    <FeaturedProductList
       products={streamableProducts} // Pass streamable to vibes
       title="Featured Products"
     />
@@ -186,9 +190,9 @@ export default async function HomePage({ params }: Props) {
 }
 
 // vibes/soul/sections/featured-product-list/index.tsx - Presentation
-export function FeaturedProductList({ 
-  products, 
-  title 
+export function FeaturedProductList({
+  products,
+  title
 }: {
   products: Streamable<Product[]>; // Accept streamable
   title: string;
@@ -217,6 +221,7 @@ Components should be imported from the vibes design system using the `@/vibes/so
 ### Server Components by Default
 
 All pages are React Server Components, enabling:
+
 - Server-side data fetching with zero client JavaScript
 - Automatic code splitting and optimization
 - SEO-friendly content rendering
@@ -244,7 +249,7 @@ app/[locale]/(default)/
 export default async function ProductPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const customerAccessToken = await getSessionCustomerAccessToken();
-  
+
   // Create streamables for concurrent data loading
   const streamableProduct = Streamable.from(async () => {
     return getProduct(slug, customerAccessToken);
@@ -256,7 +261,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
   });
 
   return (
-    <ProductDetail 
+    <ProductDetail
       product={streamableProduct}
       reviews={streamableReviews}
     />

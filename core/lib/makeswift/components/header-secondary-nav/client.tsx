@@ -29,6 +29,16 @@ interface CategoryLink {
   }>;
 }
 
+interface LegacyCategoryLink {
+  label: string;
+  href: string;
+  groups?: Array<{
+    label?: string;
+    href?: string;
+    links: Array<{ label: string; href: string }>;
+  }>;
+}
+
 interface NavLinkItem {
   label: string;
   link: LinkValue;
@@ -42,7 +52,7 @@ export interface MakeswiftHeaderSecondaryNavProps {
   className?: string;
   backgroundColor?: string;
   categoryButtonLabel?: string;
-  links?: Streamable<CategoryLink[]>;
+  links?: Streamable<CategoryLink[] | LegacyCategoryLink[]>;
   primaryLinks?: NavLinkItem[];
   utilityLinks?: UtilityLink[];
 }
@@ -59,6 +69,8 @@ export const PropsContextProvider = ({
 );
 
 const resolveHref = (link: LinkValue, fallback = '#') => link?.href ?? fallback;
+const resolveLegacyHref = (link?: { href?: string } | null, fallback = '#') =>
+  link?.href ?? fallback;
 
 const DEFAULT_PRIMARY_LINKS: NavLinkItem[] = [
   { label: 'Home', link: { href: '/' } },
@@ -77,8 +89,10 @@ const renderIcon = (icon?: UtilityLink['icon']) => {
   switch (icon) {
     case 'flame':
       return <Flame className="h-4 w-4" />;
+
     case 'help':
       return <HelpCircle className="h-4 w-4" />;
+
     default:
       return null;
   }
@@ -132,6 +146,20 @@ export function MakeswiftHeaderSecondaryNav({
   );
 
   const resolvedLinks = links ?? contextLinks ?? [];
+  const normalizeLinks = (items: CategoryLink[] | LegacyCategoryLink[]) =>
+    items.map((item) =>
+      'link' in item
+        ? item
+        : {
+            label: item.label,
+            link: { href: resolveLegacyHref(item) },
+            groups: item.groups?.map((group) => ({
+              label: group.label,
+              link: group.href ? { href: group.href } : undefined,
+              links: group.links.map((link) => ({ label: link.label, link: { href: link.href } })),
+            })),
+          },
+    );
   const resolvedPrimaryLinks =
     primaryLinks && primaryLinks.length > 0 ? primaryLinks : DEFAULT_PRIMARY_LINKS;
   const resolvedUtilityLinks =
@@ -192,11 +220,8 @@ export function MakeswiftHeaderSecondaryNav({
                     {(items) =>
                       items.length > 0 ? (
                         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                          {items.map((item, itemIdx) => (
-                            <div
-                              className="space-y-3"
-                              key={`${itemIdx}-${item.label}`}
-                            >
+                          {normalizeLinks(items).map((item, itemIdx) => (
+                            <div className="space-y-3" key={`${itemIdx}-${item.label}`}>
                               <Link
                                 className="text-sm font-semibold uppercase tracking-wide text-slate-900 transition-colors hover:text-[#ED1C2E]"
                                 href={resolveHref(item.link)}
@@ -205,11 +230,11 @@ export function MakeswiftHeaderSecondaryNav({
                               </Link>
                               {item.groups?.length ? (
                                 <div className="space-y-4 text-sm text-slate-600">
-                                      {item.groups.map((group, groupIdx) => (
-                                        <div
-                                          className="space-y-1"
-                                          key={`${item.label}-${groupIdx}-${group.label ?? 'group'}`}
-                                        >
+                                  {item.groups.map((group, groupIdx) => (
+                                    <div
+                                      className="space-y-1"
+                                      key={`${item.label}-${groupIdx}-${group.label ?? 'group'}`}
+                                    >
                                       {(() => {
                                         if (!group.label) {
                                           return null;

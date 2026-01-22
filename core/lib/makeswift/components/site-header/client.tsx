@@ -15,11 +15,11 @@ type HeaderSectionProps = ComponentPropsWithoutRef<typeof HeaderSection>;
 
 type NavigationProps = HeaderSectionProps['navigation'];
 
-type ContextProps = {
+interface ContextProps {
   navigation: Omit<NavigationProps, 'links'> & {
     links: Awaited<NavigationProps['links']>;
   };
-};
+}
 
 const PropsContext = createContext<ContextProps>({
   navigation: {
@@ -64,7 +64,7 @@ export const MakeswiftHeader = forwardRef(
     const { navigation: passedProps } = useContext(PropsContext);
     const resolvedSearchVariant = searchVariant ?? passedProps.searchVariant;
     const resolvedSearchButtonHoverColor =
-    searchButtonHoverColor ?? passedProps.searchButtonHoverColor;
+      searchButtonHoverColor ?? passedProps.searchButtonHoverColor;
 
     return (
       <HeaderSection

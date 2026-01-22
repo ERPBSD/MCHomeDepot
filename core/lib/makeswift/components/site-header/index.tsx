@@ -7,11 +7,11 @@ import { getComponentSnapshot } from '~/lib/makeswift/client';
 import { PropsContextProvider } from './client';
 import { COMPONENT_TYPE } from './register';
 
-type Props = {
+interface Props {
   navigation: ComponentPropsWithoutRef<typeof HeaderSection>['navigation'];
   snapshotId?: string;
   label?: string;
-};
+}
 
 export const SiteHeader = async ({
   snapshotId = 'site-header',
