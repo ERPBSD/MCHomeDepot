@@ -30,6 +30,13 @@ Header-related context
   - Secondary nav: `core/lib/makeswift/components/header-secondary-nav`
 - Navigation primitive: `core/vibes/soul/primitives/navigation/index.tsx`
   - Contains inline search form + mobile/tablet behaviors.
+  - Inline search form now uses `w-full` so container width changes apply.
+  - Mobile layout: hamburger left, logo centered, search icon + cart right (logo centered via absolute positioning on mobile).
+  - Tablet (md–lg): hamburger appears next to the inline search bar.
+  - Search button hover color is driven by `searchButtonHoverColor` on navigation.
+
+Data shape notes
+- `HeaderSecondaryNav` accepts both legacy link shape `{ label, href, groups }` and Makeswift shape `{ label, link }` and normalizes at render time.
 
 Notes for future work
 - If adding a new Makeswift component, add:
@@ -38,3 +45,8 @@ Notes for future work
   - `index.tsx` (server wrapper if needed)
   - Import `register.ts` in `core/lib/makeswift/components.ts`
 - Keep changes SSR-safe and avoid layout flashes by matching background colors on wrappers.
+
+Build/lint notes
+- `core/package.json` scripts: `lint`, `typecheck`, `generate`, `build`, `dev`.
+- Build runs `npm run generate` first; requires store hash in `.env.local` or env vars.
+- Prettier CRLF warnings can be fixed via: `pnpm --filter @bigcommerce/catalyst-makeswift exec prettier --write .`

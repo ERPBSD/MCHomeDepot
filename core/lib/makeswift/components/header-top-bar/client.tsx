@@ -22,6 +22,7 @@ export interface MakeswiftHeaderTopBarProps {
 const DEFAULT_MESSAGE = 'Get a free 30 day money back guarantee';
 const DEFAULT_WISHLIST_LABEL = 'My Wishlist';
 const DEFAULT_LOGIN_LABEL = 'Login';
+
 interface TopBarStyle extends CSSProperties {
   '--topbar-hover': string;
 }
@@ -44,10 +45,7 @@ export function MakeswiftHeaderTopBar({
   };
 
   return (
-    <section
-      className={clsx('w-full', className)}
-      style={style}
-    >
+    <section className={clsx('w-full', className)} style={style}>
       <div className="mx-auto flex w-full flex-col gap-2 px-4 py-2 text-sm @container sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {resolvedMessage ? (
           <div className="hidden min-w-0 sm:block sm:max-w-[70%]">
