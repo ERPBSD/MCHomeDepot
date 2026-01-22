@@ -41,8 +41,9 @@ export const HeaderSection = forwardRef<React.ComponentRef<'div'>, Props>(
           onUnfix={() => setIsFloating(false)}
           onUnpin={() => setIsFloating(true)}
           pinStart={bannerHeight}
+          style={navigation.backgroundColor ? { backgroundColor: navigation.backgroundColor } : {}}
         >
-          <div className="p-2">
+          <div className="p-0">
             <Navigation {...navigation} isFloating={isFloating} />
           </div>
         </Headroom>

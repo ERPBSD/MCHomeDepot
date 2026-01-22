@@ -36,16 +36,21 @@ export function Logo({ className, logo: streamableLogo, href, width, height, lab
         <Link
           aria-label={label}
           className={clsx(
-            'relative inline-block outline-0 ring-[var(--logo-focus,hsl(var(--primary)))] ring-offset-4 focus-visible:ring-2',
+            'relative inline-block h-[var(--logo-max-height)] max-w-[var(--logo-max-width)] outline-0 ring-[var(--logo-focus,hsl(var(--primary)))] ring-offset-4 focus-visible:ring-2',
             className,
           )}
           href={href}
-          style={typeof logo === 'string' ? {} : { maxWidth: `${width}px`, height: `${height}px` }}
+          style={
+            {
+              ['--logo-max-width' as string]: `${width}px`,
+              ['--logo-max-height' as string]: `${height}px`,
+            } as React.CSSProperties
+          }
         >
           {typeof logo === 'object' && logo !== null && logo.src !== '' ? (
             <Image
               alt={logo.alt}
-              className="h-auto w-full object-contain object-left"
+              className="h-full w-full object-contain object-left"
               height={height}
               src={logo.src}
               width={width}

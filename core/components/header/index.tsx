@@ -12,6 +12,8 @@ import { logoTransformer } from '~/data-transformers/logo-transformer';
 import { routing } from '~/i18n/routing';
 import { getCartId } from '~/lib/cart';
 import { getPreferredCurrencyCode } from '~/lib/currency';
+import { HeaderSecondaryNav } from '~/lib/makeswift/components/header-secondary-nav';
+import { HeaderTopBar } from '~/lib/makeswift/components/header-top-bar';
 import { SiteHeader as HeaderSection } from '~/lib/makeswift/components/site-header';
 
 import { search } from './_actions/search';
@@ -154,33 +156,42 @@ export const Header = async () => {
   });
 
   return (
-    <HeaderSection
-      navigation={{
-        accountHref: '/login',
-        accountLabel: t('Icons.account'),
-        cartHref: '/cart',
-        cartLabel: t('Icons.cart'),
-        giftCertificatesLabel: t('Icons.giftCertificates'),
-        giftCertificatesHref: '/gift-certificates',
-        giftCertificatesEnabled: streamableGiftCertificatesEnabled,
-        searchHref: '/search',
-        searchParamName: 'term',
-        searchAction: search,
-        searchInputPlaceholder: t('Search.inputPlaceholder'),
-        searchSubmitLabel: t('Search.submitLabel'),
-        links: streamableLinks,
-        logo,
-        mobileMenuTriggerLabel: t('toggleNavigation'),
-        openSearchPopupLabel: t('Icons.search'),
-        logoLabel: t('home'),
-        cartCount: streamableCartCount,
-        activeLocaleId: locale,
-        locales,
-        currencies,
-        activeCurrencyId: streamableActiveCurrencyId,
-        currencyAction: switchCurrency,
-        switchCurrencyLabel: t('SwitchCurrency.label'),
-      }}
-    />
+    <>
+      <HeaderTopBar />
+      <div className="w-full bg-[#004896]">
+        <HeaderSection
+          navigation={{
+            accountHref: '/login',
+            accountLabel: t('Icons.account'),
+            showAccount: false,
+            cartHref: '/cart',
+            cartLabel: t('Icons.cart'),
+            giftCertificatesLabel: t('Icons.giftCertificates'),
+            giftCertificatesHref: '/gift-certificates',
+            giftCertificatesEnabled: streamableGiftCertificatesEnabled,
+            searchHref: '/search',
+            searchParamName: 'term',
+            searchAction: search,
+            searchInputPlaceholder: t('Search.inputPlaceholder'),
+            searchSubmitLabel: t('Search.submitLabel'),
+            searchVariant: 'inline',
+            links: streamableLinks,
+            showLinks: false,
+            logo,
+            mobileMenuTriggerLabel: t('toggleNavigation'),
+            openSearchPopupLabel: t('Icons.search'),
+            logoLabel: t('home'),
+            cartCount: streamableCartCount,
+            activeLocaleId: locale,
+            locales,
+            currencies,
+            activeCurrencyId: streamableActiveCurrencyId,
+            currencyAction: switchCurrency,
+            switchCurrencyLabel: t('SwitchCurrency.label'),
+          }}
+        />
+        <HeaderSecondaryNav links={streamableLinks} />
+      </div>
+    </>
   );
 };
