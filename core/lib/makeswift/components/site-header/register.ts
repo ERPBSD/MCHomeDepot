@@ -1,31 +1,10 @@
-import {
-  Checkbox,
-  Group,
-  Image,
-  Link,
-  List,
-  Number,
-  Select,
-  Slot,
-  TextInput,
-} from '@makeswift/runtime/controls';
+import { Color, Group, Image, Link, Number, TextInput } from '@makeswift/runtime/controls';
 
 import { runtime } from '~/lib/makeswift/runtime';
 
 import { MakeswiftHeader } from './client';
 
 export const COMPONENT_TYPE = 'catalyst-makeswift-header';
-
-const banner = Group({
-  label: 'Banner',
-  preferredLayout: Group.Layout.Popover,
-  props: {
-    show: Checkbox({ label: 'Show banner', defaultValue: false }),
-    allowClose: Checkbox({ label: 'Allow banner to close', defaultValue: true }),
-    id: TextInput({ label: 'Banner ID', defaultValue: 'black_friday_2025' }),
-    children: Slot(),
-  },
-});
 
 const logoGroup = (
   label: string,
@@ -54,58 +33,16 @@ const logo = Group({
   },
 });
 
-const links = List({
-  label: 'Links',
-  type: Group({
-    label: 'Link',
-    props: {
-      label: TextInput({ label: 'Text', defaultValue: 'Text' }),
-      link: Link({ label: 'URL' }),
-    },
-  }),
-  getItemLabel: (item) => item?.label ?? 'Text',
-});
-
-const groups = List({
-  label: 'Groups',
-  type: Group({
-    label: 'Link group',
-    props: {
-      label: TextInput({ label: 'Text', defaultValue: 'Text' }),
-      link: Link({ label: 'URL' }),
-      links,
-    },
-  }),
-  getItemLabel: (item) => item?.label ?? 'Text',
-});
-
 runtime.registerComponent(MakeswiftHeader, {
   type: COMPONENT_TYPE,
   label: 'Site Header',
   hidden: true,
   props: {
-    banner,
+    backgroundColor: Color({ label: 'Background color', defaultValue: '#004896' }),
+    searchButtonHoverColor: Color({
+      label: 'Search button hover color',
+      defaultValue: '#ED1C2E',
+    }),
     logo,
-    links: List({
-      label: 'Additional links',
-      type: Group({
-        label: 'Link',
-        props: {
-          label: TextInput({ label: 'Text', defaultValue: 'Text' }),
-          link: Link({ label: 'URL' }),
-          groups,
-        },
-      }),
-      getItemLabel: (item) => item?.label ?? 'Text',
-    }),
-    linksPosition: Select({
-      label: 'Links position',
-      options: [
-        { value: 'center', label: 'Center' },
-        { value: 'left', label: 'Left' },
-        { value: 'right', label: 'Right' },
-      ],
-      defaultValue: 'center',
-    }),
   },
 });

@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --primary: 96 100% 68%;
-  --accent: 96 100% 88%;
+  --primary: 211 100% 29%;
+  --accent: 355 85% 52%;
+  --tertiary: 208 93% 23%;
   --background: 0 0% 100%;
   --foreground: 0 0% 7%;
   --success: 116 78% 65%;

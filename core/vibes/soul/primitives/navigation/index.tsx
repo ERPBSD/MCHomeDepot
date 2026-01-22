@@ -123,8 +123,10 @@ interface Props<S extends SearchResult> {
   searchAction?: SearchAction<S>;
   searchInputPlaceholder?: string;
   searchSubmitLabel?: string;
+  searchButtonHoverColor?: string;
   cartLabel?: string;
   accountLabel?: string;
+  showAccount?: boolean;
   openSearchPopupLabel?: string;
   searchLabel?: string;
   mobileMenuTriggerLabel?: string;
@@ -132,6 +134,9 @@ interface Props<S extends SearchResult> {
   giftCertificatesLabel?: string;
   giftCertificatesHref: string;
   giftCertificatesEnabled?: Streamable<boolean>;
+  showLinks?: boolean;
+  searchVariant?: 'icon' | 'inline';
+  backgroundColor?: string;
 }
 
 const MobileMenuButton = forwardRef<
@@ -293,8 +298,10 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
     searchAction,
     searchInputPlaceholder,
     searchSubmitLabel,
+    searchButtonHoverColor = '#043D70',
     cartLabel = 'Cart',
     accountLabel = 'Profile',
+    showAccount = true,
     openSearchPopupLabel = 'Open search popup',
     searchLabel = 'Search',
     mobileMenuTriggerLabel = 'Toggle navigation',
@@ -302,6 +309,9 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
     giftCertificatesLabel = 'Gift Certificates',
     giftCertificatesHref,
     giftCertificatesEnabled: streamableGiftCertificatesEnabled,
+    showLinks = true,
+    searchVariant = 'icon',
+    backgroundColor,
   }: Props<S>,
   ref: Ref<HTMLDivElement>,
 ) {
@@ -328,342 +338,469 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
 
   return (
     <NavigationMenu.Root
-      className={clsx('relative mx-auto w-full max-w-screen-2xl @container', className)}
+      className={clsx(
+        'relative w-full bg-[var(--nav-background,hsl(var(--background)))] @container',
+        className,
+      )}
       delayDuration={0}
       onValueChange={() => setIsSearchOpen(false)}
       ref={ref}
+      style={
+        backgroundColor
+          ? ({
+              ['--nav-background' as string]: backgroundColor,
+              ['--nav-floating-border' as string]: backgroundColor,
+            } as React.CSSProperties)
+          : undefined
+      }
     >
-      <div
-        className={clsx(
-          'flex items-center justify-between gap-1 bg-[var(--nav-background,hsl(var(--background)))] py-2 pl-3 pr-2 transition-shadow @4xl:rounded-2xl @4xl:px-2 @4xl:pl-6 @4xl:pr-2.5',
-          isFloating
-            ? 'shadow-xl ring-1 ring-[var(--nav-floating-border,hsl(var(--foreground)/10%))]'
-            : 'shadow-none ring-0',
-        )}
-      >
-        {/* Mobile Menu */}
-        <Popover.Root onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
-          <Popover.Anchor className="absolute left-0 right-0 top-full" />
-          <Popover.Trigger asChild>
-            <MobileMenuButton
-              aria-label={mobileMenuTriggerLabel}
-              className="mr-1 @4xl:hidden"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              open={isMobileMenuOpen}
-            />
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Content className="max-h-[calc(var(--radix-popover-content-available-height)-8px)] w-[var(--radix-popper-anchor-width)] @container data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-              <div className="max-h-[inherit] divide-y divide-[var(--nav-mobile-divider,hsl(var(--contrast-100)))] overflow-y-auto bg-[var(--nav-mobile-background,hsl(var(--background)))]">
-                <Stream
-                  fallback={
-                    <ul className="flex animate-pulse flex-col gap-4 p-5 @4xl:gap-2 @4xl:p-5">
-                      <li>
-                        <span className="block h-4 w-10 rounded-md bg-contrast-100" />
-                      </li>
-                      <li>
-                        <span className="block h-4 w-14 rounded-md bg-contrast-100" />
-                      </li>
-                      <li>
-                        <span className="block h-4 w-24 rounded-md bg-contrast-100" />
-                      </li>
-                      <li>
-                        <span className="block h-4 w-16 rounded-md bg-contrast-100" />
-                      </li>
-                    </ul>
-                  }
-                  value={streamableLinks}
-                >
-                  {(links) =>
-                    links.map((item, i) => (
-                      <ul className="flex flex-col p-2 @4xl:gap-2 @4xl:p-5" key={i}>
-                        {item.label !== '' && (
-                          <li>
-                            <Link
-                              className="block rounded-lg bg-[var(--nav-mobile-link-background,transparent)] px-3 py-2 font-[family-name:var(--nav-mobile-link-font-family,var(--font-family-body))] font-semibold text-[var(--nav-mobile-link-text,hsl(var(--foreground)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors hover:bg-[var(--nav-mobile-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-mobile-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2 @4xl:py-4"
-                              href={item.href}
-                            >
-                              {item.label}
-                            </Link>
-                          </li>
-                        )}
-                        {item.groups
-                          ?.flatMap((group) => group.links)
-                          .map((link, j) => (
-                            <li key={j}>
-                              <Link
-                                className="block rounded-lg bg-[var(--nav-mobile-sub-link-background,transparent)] px-3 py-2 font-[family-name:var(--nav-mobile-sub-link-font-family,var(--font-family-body))] text-sm font-medium text-[var(--nav-mobile-sub-link-text,hsl(var(--contrast-500)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors hover:bg-[var(--nav-mobile-sub-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-mobile-sub-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2 @4xl:py-4"
-                                href={link.href}
-                              >
-                                {link.label}
-                              </Link>
-                            </li>
-                          ))}
-                      </ul>
-                    ))
-                  }
-                </Stream>
-                {/* Mobile Locale / Currency Dropdown */}
-                {locales && locales.length > 1 && streamableCurrencies && (
-                  <div className="p-2 @4xl:p-5">
-                    <div className="flex items-center px-3 py-1 @4xl:py-2">
-                      {/* Locale / Language Dropdown */}
-                      {locales.length > 1 ? (
-                        <LocaleSwitcher
-                          activeLocaleId={activeLocaleId}
-                          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                          locales={locales as [Locale, Locale, ...Locale[]]}
-                        />
-                      ) : null}
-
-                      {/* Currency Dropdown */}
-                      <Stream
-                        fallback={null}
-                        value={Streamable.all([streamableCurrencies, streamableActiveCurrencyId])}
-                      >
-                        {([currencies, activeCurrencyId]) =>
-                          currencies.length > 1 && currencyAction ? (
-                            <CurrencyForm
-                              action={currencyAction}
-                              activeCurrencyId={activeCurrencyId}
-                              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                              currencies={currencies as [Currency, ...Currency[]]}
-                            />
-                          ) : null
-                        }
-                      </Stream>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Popover.Content>
-          </Popover.Portal>
-        </Popover.Root>
-
-        {/* Logo */}
+      <div className="mx-auto w-full max-w-screen-2xl">
         <div
           className={clsx(
-            'flex items-center justify-start self-stretch',
-            linksPosition === 'center' ? 'flex-1' : 'flex-1 @4xl:flex-none',
+            'relative flex items-center justify-between gap-1 bg-[var(--nav-background,hsl(var(--background)))] py-2 pl-3 pr-2 @4xl:px-2 @4xl:pl-6 @4xl:pr-2.5',
           )}
         >
-          <Logo
-            className={clsx(streamableMobileLogo != null ? 'hidden @4xl:flex' : 'flex')}
-            height={logoHeight}
-            href={logoHref}
-            label={logoLabel}
-            logo={streamableLogo}
-            width={logoWidth}
-          />
-          {streamableMobileLogo != null && (
-            <Logo
-              className="flex @4xl:hidden"
-              height={mobileLogoHeight}
-              href={logoHref}
-              label={logoLabel}
-              logo={streamableMobileLogo}
-              width={mobileLogoWidth}
-            />
-          )}
-        </div>
-
-        {/* Top Level Nav Links */}
-        <ul
-          className={clsx(
-            'hidden gap-1 @4xl:flex @4xl:flex-1',
-            {
-              left: '@4xl:justify-start',
-              center: '@4xl:justify-center',
-              right: '@4xl:justify-end',
-            }[linksPosition],
-          )}
-        >
-          <Stream
-            fallback={
-              <ul className="flex min-h-[41px] animate-pulse flex-row items-center @4xl:gap-6 @4xl:p-2.5">
-                <li>
-                  <span className="block h-4 w-10 rounded-md bg-contrast-100" />
-                </li>
-                <li>
-                  <span className="block h-4 w-14 rounded-md bg-contrast-100" />
-                </li>
-                <li>
-                  <span className="block h-4 w-24 rounded-md bg-contrast-100" />
-                </li>
-                <li>
-                  <span className="block h-4 w-16 rounded-md bg-contrast-100" />
-                </li>
-              </ul>
-            }
-            value={streamableLinks}
-          >
-            {(links) =>
-              links.map((item, i) => (
-                <NavigationMenu.Item key={i} value={i.toString()}>
-                  <NavigationMenu.Trigger asChild>
-                    <Link
-                      className="hidden items-center whitespace-nowrap rounded-xl bg-[var(--nav-link-background,transparent)] p-2.5 font-[family-name:var(--nav-link-font-family,var(--font-family-body))] text-sm font-medium text-[var(--nav-link-text,hsl(var(--foreground)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors duration-200 hover:bg-[var(--nav-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2 @4xl:inline-flex"
-                      href={item.href}
-                    >
-                      {item.label}
-                    </Link>
-                  </NavigationMenu.Trigger>
-                  {item.groups != null && item.groups.length > 0 && (
-                    <NavigationMenu.Content className="rounded-2xl bg-[var(--nav-menu-background,hsl(var(--background)))] shadow-xl ring-1 ring-[var(--nav-menu-border,hsl(var(--foreground)/5%))]">
-                      <div className="m-auto grid w-full max-w-screen-lg grid-cols-5 justify-center gap-5 px-5 pb-8 pt-5">
-                        {item.groups.map((group, columnIndex) => (
-                          <ul className="flex flex-col" key={columnIndex}>
-                            {/* Second Level Links */}
-                            {group.label != null && group.label !== '' && (
-                              <li>
-                                {group.href != null && group.href !== '' ? (
-                                  <Link className={navGroupClassName} href={group.href}>
-                                    {group.label}
-                                  </Link>
-                                ) : (
-                                  <span className={navGroupClassName}>{group.label}</span>
-                                )}
-                              </li>
-                            )}
-
-                            {group.links.map((link, idx) => (
-                              // Third Level Links
-                              <li key={idx}>
+          <Popover.Root onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
+            <Popover.Anchor className="absolute left-0 right-0 top-full" />
+            {/* Mobile Menu */}
+            <Popover.Trigger asChild>
+              <MobileMenuButton
+                aria-label={mobileMenuTriggerLabel}
+                className="mr-1 text-white md:hidden"
+                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                open={isMobileMenuOpen}
+                style={{ ['--nav-mobile-button-icon' as string]: '#ffffff' }}
+              />
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content className="max-h-[calc(var(--radix-popover-content-available-height)-8px)] w-[var(--radix-popper-anchor-width)] @container data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                <div className="max-h-[inherit] divide-y divide-[var(--nav-mobile-divider,hsl(var(--contrast-100)))] overflow-y-auto bg-[var(--nav-mobile-background,hsl(var(--background)))]">
+                  <Stream
+                    fallback={
+                      <ul className="flex animate-pulse flex-col gap-4 p-5 @4xl:gap-2 @4xl:p-5">
+                        <li>
+                          <span className="block h-4 w-10 rounded-md bg-contrast-100" />
+                        </li>
+                        <li>
+                          <span className="block h-4 w-14 rounded-md bg-contrast-100" />
+                        </li>
+                        <li>
+                          <span className="block h-4 w-24 rounded-md bg-contrast-100" />
+                        </li>
+                        <li>
+                          <span className="block h-4 w-16 rounded-md bg-contrast-100" />
+                        </li>
+                      </ul>
+                    }
+                    value={streamableLinks}
+                  >
+                    {(links) =>
+                      links.map((item, i) => (
+                        <ul className="flex flex-col p-2 @4xl:gap-2 @4xl:p-5" key={i}>
+                          {item.label !== '' && (
+                            <li>
+                              <Link
+                                className="block rounded-lg bg-[var(--nav-mobile-link-background,transparent)] px-3 py-2 font-[family-name:var(--nav-mobile-link-font-family,var(--font-family-body))] font-semibold text-[var(--nav-mobile-link-text,hsl(var(--foreground)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors hover:bg-[var(--nav-mobile-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-mobile-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2 @4xl:py-4"
+                                href={item.href}
+                              >
+                                {item.label}
+                              </Link>
+                            </li>
+                          )}
+                          {item.groups
+                            ?.flatMap((group) => group.links)
+                            .map((link, j) => (
+                              <li key={j}>
                                 <Link
-                                  className="block rounded-lg bg-[var(--nav-sub-link-background,transparent)] px-3 py-1.5 font-[family-name:var(--nav-sub-link-font-family,var(--font-family-body))] text-sm font-medium text-[var(--nav-sub-link-text,hsl(var(--contrast-500)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors hover:bg-[var(--nav-sub-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-sub-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2"
+                                  className="block rounded-lg bg-[var(--nav-mobile-sub-link-background,transparent)] px-3 py-2 font-[family-name:var(--nav-mobile-sub-link-font-family,var(--font-family-body))] text-sm font-medium text-[var(--nav-mobile-sub-link-text,hsl(var(--contrast-500)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors hover:bg-[var(--nav-mobile-sub-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-mobile-sub-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2 @4xl:py-4"
                                   href={link.href}
                                 >
                                   {link.label}
                                 </Link>
                               </li>
                             ))}
-                          </ul>
-                        ))}
+                        </ul>
+                      ))
+                    }
+                  </Stream>
+                  {locales && locales.length > 1 && streamableCurrencies && (
+                    <div className="p-2 @4xl:p-5">
+                      <div className="flex items-center px-3 py-1 @4xl:py-2">
+                        {locales.length > 1 ? (
+                          <LocaleSwitcher
+                            activeLocaleId={activeLocaleId}
+                            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                            locales={locales as [Locale, Locale, ...Locale[]]}
+                          />
+                        ) : null}
+
+                        <Stream
+                          fallback={null}
+                          value={Streamable.all([streamableCurrencies, streamableActiveCurrencyId])}
+                        >
+                          {([currencies, activeCurrencyId]) =>
+                            currencies.length > 1 && currencyAction ? (
+                              <CurrencyForm
+                                action={currencyAction}
+                                activeCurrencyId={activeCurrencyId}
+                                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                                currencies={currencies as [Currency, ...Currency[]]}
+                              />
+                            ) : null
+                          }
+                        </Stream>
                       </div>
-                    </NavigationMenu.Content>
+                    </div>
                   )}
-                </NavigationMenu.Item>
-              ))
-            }
-          </Stream>
-        </ul>
+                </div>
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
 
-        {/* Icon Buttons */}
-        <div
-          className={clsx(
-            'flex items-center justify-end gap-0.5 transition-colors duration-300',
-            linksPosition === 'center' ? 'flex-1' : 'flex-1 @4xl:flex-none',
-          )}
-        >
-          {searchAction ? (
-            <Popover.Root onOpenChange={setIsSearchOpen} open={isSearchOpen}>
-              <Popover.Anchor className="absolute left-0 right-0 top-full" />
-              <Popover.Trigger asChild>
-                <button
-                  aria-label={openSearchPopupLabel}
-                  className={navButtonClassName}
-                  onPointerEnter={(e) => e.preventDefault()}
-                  onPointerLeave={(e) => e.preventDefault()}
-                  onPointerMove={(e) => e.preventDefault()}
-                >
-                  <Search size={20} strokeWidth={1} />
-                </button>
-              </Popover.Trigger>
-              <Popover.Portal>
-                <Popover.Content className="max-h-[calc(var(--radix-popover-content-available-height)-16px)] w-[var(--radix-popper-anchor-width)] py-2 @container data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-                  <div className="flex max-h-[inherit] flex-col rounded-2xl bg-[var(--nav-search-background,hsl(var(--background)))] shadow-xl ring-1 ring-[var(--nav-search-border,hsl(var(--foreground)/5%))] transition-all duration-200 ease-in-out @4xl:inset-x-0">
-                    <SearchForm
-                      searchAction={searchAction}
-                      searchHref={searchHref}
-                      searchInputPlaceholder={searchInputPlaceholder}
-                      searchParamName={searchParamName}
-                      searchSubmitLabel={searchSubmitLabel}
-                    />
-                  </div>
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
-          ) : (
-            <Link aria-label={searchLabel} className={navButtonClassName} href={searchHref}>
-              <Search size={20} strokeWidth={1} />
-            </Link>
-          )}
+          {/* Logo */}
+          <div
+            className={clsx(
+              'absolute left-1/2 flex -translate-x-1/2 items-center justify-center self-stretch md:static md:translate-x-0 md:justify-start',
+              linksPosition === 'center'
+                ? 'flex-1 lg:flex-[1]'
+                : 'flex-1 @4xl:flex-none lg:flex-[1]',
+            )}
+          >
+            <Logo
+              className={clsx(
+                streamableMobileLogo != null ? 'hidden @4xl:flex' : 'flex',
+                'lg:![--logo-max-height:44px] lg:![--logo-max-width:220px] xl:![--logo-max-height:52px] xl:![--logo-max-width:260px] 2xl:![--logo-max-height:60px] 2xl:![--logo-max-width:300px]',
+              )}
+              height={logoHeight}
+              href={logoHref}
+              label={logoLabel}
+              logo={streamableLogo}
+              width={logoWidth}
+            />
+            {streamableMobileLogo != null && (
+              <Logo
+                className="flex @4xl:hidden"
+                height={mobileLogoHeight}
+                href={logoHref}
+                label={logoLabel}
+                logo={streamableMobileLogo}
+                width={mobileLogoWidth}
+              />
+            )}
+          </div>
 
-          <Link aria-label={accountLabel} className={navButtonClassName} href={accountHref}>
-            <User size={20} strokeWidth={1} />
-          </Link>
-          <Link aria-label={cartLabel} className={navButtonClassName} href={cartHref}>
-            <ShoppingBag size={20} strokeWidth={1} />
-            <Stream
-              fallback={
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-contrast-100 text-xs text-background" />
-              }
-              value={streamableCartCount}
+          {searchVariant === 'inline' ? (
+            <div className="hidden justify-center px-2 md:flex md:flex-[2] lg:flex-[4]">
+              <div className="flex w-full items-center justify-center gap-2 md:mx-auto md:w-[560px] lg:w-[900px] xl:w-[1040px]">
+                <MobileMenuButton
+                  aria-label={mobileMenuTriggerLabel}
+                  className="hidden text-white md:inline-flex lg:hidden"
+                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                  open={isMobileMenuOpen}
+                  style={{ ['--nav-mobile-button-icon' as string]: '#ffffff' }}
+                  type="button"
+                />
+                <InlineSearchForm
+                  searchHref={searchHref}
+                  searchInputPlaceholder={searchInputPlaceholder}
+                  searchParamName={searchParamName}
+                  searchSubmitLabel={searchSubmitLabel}
+                  searchButtonHoverColor={searchButtonHoverColor}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {/* Top Level Nav Links */}
+          {showLinks ? (
+            <ul
+              className={clsx(
+                'hidden gap-1 @4xl:flex @4xl:flex-1',
+                {
+                  left: '@4xl:justify-start',
+                  center: '@4xl:justify-center',
+                  right: '@4xl:justify-end',
+                }[linksPosition],
+              )}
             >
-              {(cartCount) =>
-                cartCount != null &&
-                cartCount > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--nav-cart-count-background,hsl(var(--foreground)))] font-[family-name:var(--nav-cart-count-font-family,var(--font-family-body))] text-xs text-[var(--nav-cart-count-text,hsl(var(--background)))]">
-                    {cartCount}
-                  </span>
+              <Stream
+                fallback={
+                  <ul className="flex min-h-[41px] animate-pulse flex-row items-center @4xl:gap-6 @4xl:p-2.5">
+                    <li>
+                      <span className="block h-4 w-10 rounded-md bg-contrast-100" />
+                    </li>
+                    <li>
+                      <span className="block h-4 w-14 rounded-md bg-contrast-100" />
+                    </li>
+                    <li>
+                      <span className="block h-4 w-24 rounded-md bg-contrast-100" />
+                    </li>
+                    <li>
+                      <span className="block h-4 w-16 rounded-md bg-contrast-100" />
+                    </li>
+                  </ul>
+                }
+                value={streamableLinks}
+              >
+                {(links) =>
+                  links.map((item, i) => (
+                    <NavigationMenu.Item key={i} value={i.toString()}>
+                      <NavigationMenu.Trigger asChild>
+                        <Link
+                          className="hidden items-center whitespace-nowrap rounded-xl bg-[var(--nav-link-background,transparent)] p-2.5 font-[family-name:var(--nav-link-font-family,var(--font-family-body))] text-sm font-medium text-[var(--nav-link-text,hsl(var(--foreground)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors duration-200 hover:bg-[var(--nav-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2 @4xl:inline-flex"
+                          href={item.href}
+                        >
+                          {item.label}
+                        </Link>
+                      </NavigationMenu.Trigger>
+                      {item.groups != null && item.groups.length > 0 && (
+                        <NavigationMenu.Content className="rounded-2xl bg-[var(--nav-menu-background,hsl(var(--background)))] shadow-xl ring-1 ring-[var(--nav-menu-border,hsl(var(--foreground)/5%))]">
+                          <div className="m-auto grid w-full max-w-screen-lg grid-cols-5 justify-center gap-5 px-5 pb-8 pt-5">
+                            {item.groups.map((group, columnIndex) => (
+                              <ul className="flex flex-col" key={columnIndex}>
+                                {/* Second Level Links */}
+                                {group.label != null && group.label !== '' && (
+                                  <li>
+                                    {group.href != null && group.href !== '' ? (
+                                      <Link className={navGroupClassName} href={group.href}>
+                                        {group.label}
+                                      </Link>
+                                    ) : (
+                                      <span className={navGroupClassName}>{group.label}</span>
+                                    )}
+                                  </li>
+                                )}
+
+                                {group.links.map((link, idx) => (
+                                  // Third Level Links
+                                  <li key={idx}>
+                                    <Link
+                                      className="block rounded-lg bg-[var(--nav-sub-link-background,transparent)] px-3 py-1.5 font-[family-name:var(--nav-sub-link-font-family,var(--font-family-body))] text-sm font-medium text-[var(--nav-sub-link-text,hsl(var(--contrast-500)))] ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors hover:bg-[var(--nav-sub-link-background-hover,hsl(var(--contrast-100)))] hover:text-[var(--nav-sub-link-text-hover,hsl(var(--foreground)))] focus-visible:outline-0 focus-visible:ring-2"
+                                      href={link.href}
+                                    >
+                                      {link.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            ))}
+                          </div>
+                        </NavigationMenu.Content>
+                      )}
+                    </NavigationMenu.Item>
+                  ))
+                }
+              </Stream>
+            </ul>
+          ) : null}
+
+          {/* Icon Buttons */}
+          <div
+            className={clsx(
+              'flex items-center justify-end gap-0.5 transition-colors duration-300',
+              linksPosition === 'center'
+                ? 'flex-1 lg:flex-[1]'
+                : 'flex-1 @4xl:flex-none lg:flex-[1]',
+            )}
+          >
+            {searchVariant === 'inline' ? (
+              <div className="md:hidden">
+                {searchAction ? (
+                  <Popover.Root onOpenChange={setIsSearchOpen} open={isSearchOpen}>
+                    <Popover.Anchor className="absolute left-0 right-0 top-full" />
+                    <Popover.Trigger asChild>
+                      <button
+                        aria-label={openSearchPopupLabel}
+                        className={clsx(navButtonClassName, 'text-white')}
+                        onPointerEnter={(e) => e.preventDefault()}
+                        onPointerLeave={(e) => e.preventDefault()}
+                        onPointerMove={(e) => e.preventDefault()}
+                      >
+                        <Search size={20} strokeWidth={1} />
+                      </button>
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                      <Popover.Content className="max-h-[calc(var(--radix-popover-content-available-height)-16px)] w-[var(--radix-popper-anchor-width)] py-2 @container data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                        <div className="flex max-h-[inherit] flex-col rounded-2xl bg-[var(--nav-search-background,hsl(var(--background)))] shadow-xl ring-1 ring-[var(--nav-search-border,hsl(var(--foreground)/5%))] transition-all duration-200 ease-in-out @4xl:inset-x-0">
+                          <SearchForm
+                            searchAction={searchAction}
+                            searchHref={searchHref}
+                            searchInputPlaceholder={searchInputPlaceholder}
+                            searchParamName={searchParamName}
+                            searchSubmitLabel={searchSubmitLabel}
+                          />
+                        </div>
+                      </Popover.Content>
+                    </Popover.Portal>
+                  </Popover.Root>
+                ) : (
+                  <Link
+                    aria-label={searchLabel}
+                    className={clsx(navButtonClassName, 'text-white')}
+                    href={searchHref}
+                  >
+                    <Search size={20} strokeWidth={1} />
+                  </Link>
+                )}
+              </div>
+            ) : searchAction ? (
+              <Popover.Root onOpenChange={setIsSearchOpen} open={isSearchOpen}>
+                <Popover.Anchor className="absolute left-0 right-0 top-full" />
+                <Popover.Trigger asChild>
+                  <button
+                    aria-label={openSearchPopupLabel}
+                    className={navButtonClassName}
+                    onPointerEnter={(e) => e.preventDefault()}
+                    onPointerLeave={(e) => e.preventDefault()}
+                    onPointerMove={(e) => e.preventDefault()}
+                  >
+                    <Search size={20} strokeWidth={1} />
+                  </button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content className="max-h-[calc(var(--radix-popover-content-available-height)-16px)] w-[var(--radix-popper-anchor-width)] py-2 @container data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                    <div className="flex max-h-[inherit] flex-col rounded-2xl bg-[var(--nav-search-background,hsl(var(--background)))] shadow-xl ring-1 ring-[var(--nav-search-border,hsl(var(--foreground)/5%))] transition-all duration-200 ease-in-out @4xl:inset-x-0">
+                      <SearchForm
+                        searchAction={searchAction}
+                        searchHref={searchHref}
+                        searchInputPlaceholder={searchInputPlaceholder}
+                        searchParamName={searchParamName}
+                        searchSubmitLabel={searchSubmitLabel}
+                      />
+                    </div>
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+            ) : (
+              <Link
+                aria-label={searchLabel}
+                className={clsx(navButtonClassName, 'text-white')}
+                href={searchHref}
+              >
+                <Search size={20} strokeWidth={1} />
+              </Link>
+            )}
+
+            {showAccount ? (
+              <Link aria-label={accountLabel} className={navButtonClassName} href={accountHref}>
+                <User size={20} strokeWidth={1} />
+              </Link>
+            ) : null}
+            <Link
+              aria-label={cartLabel}
+              className={clsx(navButtonClassName, 'text-white')}
+              href={cartHref}
+            >
+              <ShoppingBag size={20} strokeWidth={1} />
+              <Stream
+                fallback={
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-contrast-100 text-xs text-background" />
+                }
+                value={streamableCartCount}
+              >
+                {(cartCount) =>
+                  cartCount != null &&
+                  cartCount > 0 && (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--nav-cart-count-background,hsl(var(--foreground)))] font-[family-name:var(--nav-cart-count-font-family,var(--font-family-body))] text-xs text-[var(--nav-cart-count-text,hsl(var(--background)))]">
+                      {cartCount}
+                    </span>
+                  )
+                }
+              </Stream>
+            </Link>
+
+            <Stream fallback={null} value={streamableGiftCertificatesEnabled}>
+              {(giftCertificatesEnabled) =>
+                giftCertificatesEnabled && (
+                  <Link
+                    aria-label={giftCertificatesLabel}
+                    className={navButtonClassName}
+                    href={giftCertificatesHref}
+                  >
+                    <GiftIcon size={20} strokeWidth={1} />
+                  </Link>
                 )
               }
             </Stream>
-          </Link>
 
-          <Stream fallback={null} value={streamableGiftCertificatesEnabled}>
-            {(giftCertificatesEnabled) =>
-              giftCertificatesEnabled && (
-                <Link
-                  aria-label={giftCertificatesLabel}
-                  className={navButtonClassName}
-                  href={giftCertificatesHref}
-                >
-                  <GiftIcon size={20} strokeWidth={1} />
-                </Link>
-              )
-            }
-          </Stream>
+            {/* Locale / Language Dropdown */}
+            {locales && locales.length > 1 ? (
+              <LocaleSwitcher
+                activeLocaleId={activeLocaleId}
+                className="hidden @4xl:block"
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                locales={locales as [Locale, Locale, ...Locale[]]}
+              />
+            ) : null}
 
-          {/* Locale / Language Dropdown */}
-          {locales && locales.length > 1 ? (
-            <LocaleSwitcher
-              activeLocaleId={activeLocaleId}
-              className="hidden @4xl:block"
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-              locales={locales as [Locale, Locale, ...Locale[]]}
-            />
-          ) : null}
-
-          {/* Currency Dropdown */}
-          <Stream
-            fallback={null}
-            value={Streamable.all([streamableCurrencies, streamableActiveCurrencyId])}
-          >
-            {([currencies, activeCurrencyId]) =>
-              currencies && currencies.length > 1 && currencyAction ? (
-                <CurrencyForm
-                  action={currencyAction}
-                  activeCurrencyId={activeCurrencyId}
-                  className="hidden @4xl:block"
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                  currencies={currencies as [Currency, ...Currency[]]}
-                  switchCurrencyLabel={switchCurrencyLabel}
-                />
-              ) : null
-            }
-          </Stream>
+            {/* Currency Dropdown */}
+            <Stream
+              fallback={null}
+              value={Streamable.all([streamableCurrencies, streamableActiveCurrencyId])}
+            >
+              {([currencies, activeCurrencyId]) =>
+                currencies && currencies.length > 1 && currencyAction ? (
+                  <CurrencyForm
+                    action={currencyAction}
+                    activeCurrencyId={activeCurrencyId}
+                    className="hidden @4xl:block"
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                    currencies={currencies as [Currency, ...Currency[]]}
+                    switchCurrencyLabel={switchCurrencyLabel}
+                  />
+                ) : null
+              }
+            </Stream>
+          </div>
         </div>
-      </div>
 
-      <div className="perspective-[2000px] absolute left-0 right-0 top-full z-50 flex w-full justify-center">
-        <NavigationMenu.Viewport className="relative mt-2 w-full data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95" />
+        <div className="perspective-[2000px] absolute left-0 right-0 top-full z-50 flex w-full justify-center">
+          <NavigationMenu.Viewport className="relative mt-2 w-full data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95" />
+        </div>
       </div>
     </NavigationMenu.Root>
   );
 });
 
 Navigation.displayName = 'Navigation';
+
+function InlineSearchForm({
+  searchParamName = 'query',
+  searchHref = '/search',
+  searchInputPlaceholder = 'Search Products',
+  searchSubmitLabel = 'Submit',
+  searchButtonHoverColor = '#043D70',
+}: {
+  searchParamName?: string;
+  searchHref?: string;
+  searchInputPlaceholder?: string;
+  searchSubmitLabel?: string;
+  searchButtonHoverColor?: string;
+}) {
+  return (
+    <form
+      action={searchHref}
+      className="flex h-10 w-full min-w-0 items-stretch overflow-hidden rounded-md bg-white ring-1 ring-black/20"
+    >
+      <input
+        className="h-full w-full min-w-0 grow bg-transparent px-3 text-sm font-medium text-slate-900 outline-0 placeholder:text-slate-500 focus-visible:outline-none"
+        name={searchParamName}
+        placeholder={searchInputPlaceholder}
+        type="text"
+      />
+      <Button
+        className="h-full rounded-none border-0 bg-[#1f1f1f] px-4 py-0 text-sm font-semibold uppercase tracking-wide text-[#ED1C2E] mix-blend-normal [--button-secondary-background:#1f1f1f] [--button-secondary-border:#1f1f1f] hover:text-[#ED1C2E]"
+        style={{ ['--button-secondary-background-hover' as string]: searchButtonHoverColor }}
+        shape="square"
+        size="small"
+        type="submit"
+        variant="secondary"
+      >
+        <span className="text-[#ffffff]">{searchSubmitLabel}</span>
+      </Button>
+    </form>
+  );
+}
 
 function SearchForm<S extends SearchResult>({
   searchAction,
