@@ -147,7 +147,7 @@ const MobileMenuButton = forwardRef<
     <button
       {...rest}
       className={clsx(
-        'group relative rounded-lg p-2 outline-0 ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors focus-visible:ring-2',
+        'group relative rounded-lg p-2 outline-0 ring-[var(--nav-focus,hsl(var(--primary)))] transition-colors focus-visible:ring-2 hover:[--nav-mobile-button-icon:var(--nav-mobile-button-icon-hover,#ED1C2E)]',
         className,
       )}
       ref={ref}
@@ -155,38 +155,38 @@ const MobileMenuButton = forwardRef<
       <div className="flex h-4 w-4 origin-center transform flex-col justify-between overflow-hidden transition-all duration-300">
         <div
           className={clsx(
-            'h-px origin-left transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all duration-300',
+            'h-px origin-left transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all duration-300 group-hover:bg-[#ED1C2E]',
             open ? 'translate-x-10' : 'w-7',
           )}
         />
         <div
           className={clsx(
-            'h-px transform rounded bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-75 duration-300',
+            'h-px transform rounded bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-75 duration-300 group-hover:bg-[#ED1C2E]',
             open ? 'translate-x-10' : 'w-7',
           )}
         />
         <div
           className={clsx(
-            'h-px origin-left transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-150 duration-300',
+            'h-px origin-left transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-150 duration-300 group-hover:bg-[#ED1C2E]',
             open ? 'translate-x-10' : 'w-7',
           )}
         />
 
         <div
           className={clsx(
-            'absolute top-2 flex transform items-center justify-between bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all duration-500',
+            'absolute top-2 flex transform items-center justify-between bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all duration-500 group-hover:bg-[#ED1C2E]',
             open ? 'w-12 translate-x-0' : 'w-0 -translate-x-10',
           )}
         >
           <div
             className={clsx(
-              'absolute h-px w-4 transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-300 duration-500',
+              'absolute h-px w-4 transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-300 duration-500 group-hover:bg-[#ED1C2E]',
               open ? 'rotate-45' : 'rotate-0',
             )}
           />
           <div
             className={clsx(
-              'absolute h-px w-4 transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-300 duration-500',
+              'absolute h-px w-4 transform bg-[var(--nav-mobile-button-icon,hsl(var(--foreground)))] transition-all delay-300 duration-500 group-hover:bg-[#ED1C2E]',
               open ? '-rotate-45' : 'rotate-0',
             )}
           />
@@ -366,10 +366,16 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
             <Popover.Trigger asChild>
               <MobileMenuButton
                 aria-label={mobileMenuTriggerLabel}
-                className="mr-1 text-white md:hidden"
+                className="mr-1 bg-white text-[#004896] hover:bg-white hover:text-[#ED1C2E] hover:[--nav-mobile-button-icon:#ED1C2E] md:hidden"
                 onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                 open={isMobileMenuOpen}
-                style={{ ['--nav-mobile-button-icon' as string]: '#ffffff' }}
+                style={
+                  {
+                    ['--nav-mobile-button-icon' as string]: '#004896',
+                    ['--nav-mobile-button-icon-hover' as string]: '#ED1C2E',
+                    ['--nav-button-icon-hover' as string]: '#ED1C2E',
+                  } as React.CSSProperties
+                }
               />
             </Popover.Trigger>
             <Popover.Portal>
@@ -491,13 +497,19 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
 
           {searchVariant === 'inline' ? (
             <div className="hidden justify-center px-2 md:flex md:flex-[2] lg:flex-[4]">
-              <div className="flex w-full items-center justify-center gap-2 md:mx-auto md:w-[560px] lg:w-[900px] xl:w-[1040px]">
+              <div className="flex w-full items-center justify-center gap-2 md:mx-auto md:w-[560px] lg:w-[760px] xl:w-[880px]">
                 <MobileMenuButton
                   aria-label={mobileMenuTriggerLabel}
-                  className="hidden text-white md:inline-flex lg:hidden"
+                  className="hidden bg-white text-[#004896] hover:bg-white hover:text-[#ED1C2E] hover:[--nav-mobile-button-icon:#ED1C2E] md:inline-flex lg:hidden"
                   onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                   open={isMobileMenuOpen}
-                  style={{ ['--nav-mobile-button-icon' as string]: '#ffffff' }}
+                  style={
+                    {
+                      ['--nav-mobile-button-icon' as string]: '#004896',
+                      ['--nav-mobile-button-icon-hover' as string]: '#ED1C2E',
+                      ['--nav-button-icon-hover' as string]: '#ED1C2E',
+                    } as React.CSSProperties
+                  }
                   type="button"
                 />
                 <InlineSearchForm
@@ -609,13 +621,21 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
                   <Popover.Root onOpenChange={setIsSearchOpen} open={isSearchOpen}>
                     <Popover.Anchor className="absolute left-0 right-0 top-full" />
                     <Popover.Trigger asChild>
-                      <button
-                        aria-label={openSearchPopupLabel}
-                        className={clsx(navButtonClassName, 'text-white')}
-                        onPointerEnter={(e) => e.preventDefault()}
-                        onPointerLeave={(e) => e.preventDefault()}
-                        onPointerMove={(e) => e.preventDefault()}
-                      >
+                    <button
+                      aria-label={openSearchPopupLabel}
+                      className={clsx(
+                        navButtonClassName,
+                        'bg-white text-[#004896] hover:bg-white hover:text-[#ED1C2E] mr-1 sm:mr-2 md:mr-2',
+                      )} // Search
+                      style={
+                        {
+                          ['--nav-button-icon-hover' as string]: '#ED1C2E',
+                        } as React.CSSProperties
+                      }
+                      onPointerEnter={(e) => e.preventDefault()}
+                      onPointerLeave={(e) => e.preventDefault()}
+                      onPointerMove={(e) => e.preventDefault()}
+                    >
                         <Search size={20} strokeWidth={1} />
                       </button>
                     </Popover.Trigger>
@@ -634,11 +654,19 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
                     </Popover.Portal>
                   </Popover.Root>
                 ) : (
-                  <Link
-                    aria-label={searchLabel}
-                    className={clsx(navButtonClassName, 'text-white')}
-                    href={searchHref}
-                  >
+            <Link
+              aria-label={searchLabel}
+              className={clsx(
+                navButtonClassName,
+                'bg-white text-[#004896] hover:bg-white hover:text-[#ED1C2E]',
+              )}
+              style={
+                {
+                  ['--nav-button-icon-hover' as string]: '#ED1C2E',
+                } as React.CSSProperties
+              }
+              href={searchHref}
+            >
                     <Search size={20} strokeWidth={1} />
                   </Link>
                 )}
@@ -686,28 +714,37 @@ export const Navigation = forwardRef(function Navigation<S extends SearchResult>
                 <User size={20} strokeWidth={1} />
               </Link>
             ) : null}
-            <Link
-              aria-label={cartLabel}
-              className={clsx(navButtonClassName, 'text-white')}
-              href={cartHref}
+          <Link
+            aria-label={cartLabel}
+            className={clsx(
+              navButtonClassName,
+              'bg-white text-[#004896] hover:bg-white hover:text-[#ED1C2E] mr-1 sm:mr-1 md:mr-2 lg:mr-4 xl:mr-4 2xl:mr-4',
+            )} // Cart
+            style={
+              {
+                ['--nav-button-background-hover' as string]: '#ffffff',
+                ['--nav-button-icon-hover' as string]: '#ED1C2E',
+              } as React.CSSProperties
+            }
+            href={cartHref}
+          >
+            <ShoppingBag size={20} strokeWidth={1} />
+            <Stream
+              fallback={
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-contrast-100 text-xs text-background" />
+              }
+              value={streamableCartCount}
             >
-              <ShoppingBag size={20} strokeWidth={1} />
-              <Stream
-                fallback={
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-contrast-100 text-xs text-background" />
-                }
-                value={streamableCartCount}
-              >
-                {(cartCount) =>
-                  cartCount != null &&
-                  cartCount > 0 && (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--nav-cart-count-background,hsl(var(--foreground)))] font-[family-name:var(--nav-cart-count-font-family,var(--font-family-body))] text-xs text-[var(--nav-cart-count-text,hsl(var(--background)))]">
-                      {cartCount}
-                    </span>
-                  )
-                }
-              </Stream>
-            </Link>
+              {(cartCount) =>
+                cartCount != null &&
+                cartCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--nav-cart-count-background,hsl(var(--foreground)))] font-[family-name:var(--nav-cart-count-font-family,var(--font-family-body))] text-xs text-[var(--nav-cart-count-text,hsl(var(--background)))]">
+                    {cartCount}
+                  </span>
+                )
+              }
+            </Stream>
+          </Link>
 
             <Stream fallback={null} value={streamableGiftCertificatesEnabled}>
               {(giftCertificatesEnabled) =>
