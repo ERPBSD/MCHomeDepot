@@ -91,8 +91,8 @@ export const Footer = ({
       )}
     >
       <div className="mx-auto max-w-screen-2xl px-4 py-6 @xl:px-6 @xl:py-10 @4xl:px-8 @4xl:py-12">
-        <div className="flex flex-col justify-between gap-x-16 gap-y-12 @3xl:flex-row">
-          <div className="flex flex-col gap-4 @3xl:w-1/3 @3xl:gap-6">
+        <div className="flex flex-col justify-between gap-x-16 gap-y-12 @3xl:flex-row @3xl:items-start">
+          <div className="flex flex-col gap-4 @3xl:w-[28rem] @4xl:w-[32rem] @3xl:gap-6">
             {/* Logo Information */}
             <div className="flex items-center justify-start self-stretch">
               <Logo
@@ -158,7 +158,7 @@ export const Footer = ({
                 return (
                   <div
                     className={clsx(
-                      'grid max-w-5xl grid-cols-1 gap-y-8 @sm:grid-cols-2 @xl:gap-y-10 @2xl:grid-cols-3 @6xl:[grid-template-columns:_repeat(auto-fill,_minmax(220px,_1fr))]',
+                      'grid max-w-5xl grid-cols-1 gap-y-8 @sm:grid-cols-2 @xl:gap-y-10 @2xl:grid-cols-3 @3xl:flex-1 @6xl:[grid-template-columns:_repeat(auto-fill,_minmax(220px,_1fr))]',
                     )}
                   >
                     {sections.map(({ title, links }, i) => (

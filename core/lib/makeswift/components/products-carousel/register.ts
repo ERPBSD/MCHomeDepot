@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  Color,
   Combobox,
   Group,
   List,
@@ -64,6 +65,10 @@ runtime.registerComponent(MSProductsCarousel, {
         { value: '3:4', label: '3:4' },
       ],
       defaultValue: '5:6',
+    }),
+    titleHoverColor: Color({
+      label: 'Product title hover color',
+      defaultValue: '#ED1C2E',
     }),
     colorScheme: Select({
       label: 'Text color scheme',

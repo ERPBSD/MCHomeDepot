@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import type { CSSProperties } from 'react';
 
 import { Stream, Streamable } from '@/vibes/soul/lib/streamable';
 import { CompareDrawer, CompareDrawerProvider } from '@/vibes/soul/primitives/compare-drawer';
@@ -14,6 +15,7 @@ interface ProductListProps {
   showRating?: boolean;
   compareProducts?: Streamable<Product[]>;
   className?: string;
+  titleHoverColor?: string;
   colorScheme?: 'light' | 'dark';
   aspectRatio?: '5:6' | '3:4' | '1:1';
   showCompare?: Streamable<boolean>;
@@ -61,7 +63,14 @@ export function ProductList({
   removeLabel: streamableRemoveLabel,
   maxItems,
   maxCompareLimitMessage: streamableMaxCompareLimitMessage,
+  titleHoverColor,
 }: ProductListProps) {
+  const style: CSSProperties | undefined = titleHoverColor
+    ? {
+        ['--product-card-title-hover' as string]: titleHoverColor,
+      }
+    : undefined;
+
   return (
     <Stream
       fallback={<ProductListSkeleton placeholderCount={placeholderCount} />}
@@ -98,7 +107,7 @@ export function ProductList({
             maxCompareLimitMessage={maxCompareLimitMessage}
             maxItems={maxItems}
           >
-            <div className={clsx('w-full @container', className)}>
+            <div className={clsx('w-full @container', className)} style={style}>
               <div className="mx-auto grid grid-cols-1 gap-x-4 gap-y-6 @sm:grid-cols-2 @2xl:grid-cols-3 @2xl:gap-x-5 @2xl:gap-y-8 @5xl:grid-cols-4 @7xl:grid-cols-5">
                 {products.map((product) => (
                   <ProductCard

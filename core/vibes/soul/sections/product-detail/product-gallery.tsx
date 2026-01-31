@@ -96,7 +96,7 @@ export function ProductGallery({
               <Image
                 alt={image.alt}
                 className={clsx(
-                  'bg-[var(--product-gallery-image-background,hsl(var(--contrast-100)))]',
+                  'bg-[var(--product-gallery-image-background,white)]',
                   {
                     contain: 'object-contain',
                     cover: 'object-cover',
@@ -132,7 +132,7 @@ export function ProductGallery({
             >
               <Image
                 alt={image.alt}
-                className="bg-[var(--product-gallery-image-background,hsl(var(--contrast-100)))] object-cover"
+                className="bg-[var(--product-gallery-image-background,white)] object-cover"
                 fill
                 sizes="(min-width: 28rem) 4rem, 3rem"
                 src={image.src}
