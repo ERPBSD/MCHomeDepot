@@ -37,5 +37,5 @@ export function MSProductsList({
     return <ProductListSkeleton className={className} />;
   }
 
-  return <ProductList {...props} className={className} products={products} />;
+  return <ProductList {...props} className={className} products={products} showCompare={false} />;
 }

@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import type { CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { Stream, Streamable } from '@/vibes/soul/lib/streamable';
@@ -21,6 +22,7 @@ export type CarouselProduct = Product;
 export interface ProductCarouselProps {
   products: Streamable<CarouselProduct[]>;
   className?: string;
+  titleHoverColor?: string;
   colorScheme?: 'light' | 'dark';
   aspectRatio?: '5:6' | '3:4' | '1:1';
   emptyStateTitle?: Streamable<string>;
@@ -64,7 +66,14 @@ export function ProductCarousel({
   showButtons = true,
   showScrollbar = true,
   hideOverflow = true,
+  titleHoverColor,
 }: ProductCarouselProps) {
+  const style: CSSProperties | undefined = titleHoverColor
+    ? {
+        ['--product-card-title-hover' as string]: titleHoverColor,
+      }
+    : undefined;
+
   return (
     <Stream
       fallback={
@@ -91,7 +100,7 @@ export function ProductCarousel({
         }
 
         return (
-          <Carousel className={className} hideOverflow={hideOverflow}>
+          <Carousel className={className} hideOverflow={hideOverflow} style={style}>
             <CarouselContent className="-ml-4 mb-10 @2xl:-ml-5">
               {products.map(({ id, ...product }) => (
                 <CarouselItem

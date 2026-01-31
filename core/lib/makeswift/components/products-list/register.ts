@@ -1,4 +1,5 @@
 import {
+  Color,
   Combobox,
   Group,
   List,
@@ -63,6 +64,10 @@ runtime.registerComponent(MSProductsList, {
         { value: '3:4', label: '3:4' },
       ],
       defaultValue: '5:6',
+    }),
+    titleHoverColor: Color({
+      label: 'Product title hover color',
+      defaultValue: '#ED1C2E',
     }),
     colorScheme: Select({
       label: 'Text Color Scheme',

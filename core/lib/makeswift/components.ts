@@ -12,6 +12,7 @@ import './components/product-detail/register';
 import './components/products-carousel/register';
 import './components/products-list/register';
 import './components/section/register';
+import './components/global-footer/register';
 import './components/site-footer/register';
 import './components/site-header/register';
 import './components/site-theme/register';

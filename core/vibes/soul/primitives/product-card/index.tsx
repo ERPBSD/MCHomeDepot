@@ -91,7 +91,7 @@ export function ProductCard({
       <div className="relative">
         <div
           className={clsx(
-            'relative overflow-hidden rounded-xl @md:rounded-2xl',
+            'relative overflow-hidden rounded-xl bg-white @md:rounded-2xl',
             {
               '5:6': 'aspect-[5/6]',
               '3:4': 'aspect-[3/4]',
@@ -107,7 +107,7 @@ export function ProductCard({
             <Image
               alt={image.alt}
               className={clsx(
-                'w-full scale-100 select-none object-cover transition-transform duration-500 ease-out group-hover:scale-110',
+                'w-full select-none object-contain',
                 {
                   light: 'bg-[var(--product-card-light-background,hsl(var(--contrast-100))]',
                   dark: 'bg-[var(--product-card-dark-background,hsl(var(--contrast-500))]',
@@ -142,10 +142,12 @@ export function ProductCard({
           <div className="flex-1 text-sm @[16rem]:text-base">
             <span
               className={clsx(
-                'line-clamp-2 font-semibold',
+                'line-clamp-2 font-semibold transition-colors',
                 {
-                  light: 'text-[var(--product-card-light-title,hsl(var(--foreground)))]',
-                  dark: 'text-[var(--product-card-dark-title,hsl(var(--background)))]',
+                  light:
+                    'text-[var(--product-card-light-title,hsl(var(--foreground)))] group-hover:text-[var(--product-card-title-hover,hsl(var(--foreground)))]',
+                  dark:
+                    'text-[var(--product-card-dark-title,hsl(var(--background)))] group-hover:text-[var(--product-card-title-hover,hsl(var(--background)))]',
                 }[colorScheme],
               )}
             >
