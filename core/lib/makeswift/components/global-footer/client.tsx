@@ -131,8 +131,9 @@ export const MakeswiftGlobalFooter = ({
   }));
 
   const resolvedSocialLinks: Array<{ href: string; icon: ReactNode }> = (socialLinks ?? [])
-    .filter((link): link is SocialLinkInput & { link: { href: string } } =>
-      Boolean(link.link?.href),
+    .filter(
+      (link): link is SocialLinkInput & { link: { href: string } } =>
+        Boolean(link.link?.href),
     )
     .map((link) => ({
       href: toHref(link.link),
